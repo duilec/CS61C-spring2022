@@ -92,3 +92,64 @@ end time:*22.11.19*
   
 
 ## projects
+
+### proj1
+
+Conditional Inclusion
+
+- `#ifndef`
+
+  ```c
+  /* 
+   * frame
+   */
+  #ifndef HDR 
+  #define HDR 
+  /* contents of hdr.h go here */ 
+  #endif
+  
+  /* 
+   * example
+   */
+  #define YEARS_OLD 12
+  #ifndef YEARS_OLD
+  #define YEARS_OLD 10
+  #endif
+  ```
+
+- `#ifdef`
+
+  ```c
+  /* 
+   * frame
+   */
+  #ifdef macro_definition
+  
+  /* 
+   * example
+   */
+  #include <stdio.h>
+  #define UNIX 1
+  
+  int main(){
+     #ifdef UNIX
+     printf("UNIX specific function calls go here.\n");
+     #endif
+     return 0;
+  }
+  ```
+  
+- `#if`, `#else`, `#elif`
+
+  ```c
+  #if SYSTEM == SYSV 
+  	#define HDR "sysv.h" 
+  #elif SYSTEM == BSD 
+  	#define HDR "bsd.h" 
+  #elif SYSTEM == MSDOS 
+  	#define HDR "msdos.h" 
+  #else 
+  	#define HDR "default.h" 
+  #endif 
+  #include HDR
+  ```
