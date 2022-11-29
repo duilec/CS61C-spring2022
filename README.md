@@ -15,7 +15,7 @@ This is my solution about labs and projects in CS61C spring2022
   - [x] lab00
   - [x] lab01
   - [x] lab02
-  - [ ] lab03
+  - [x] lab03
   - [ ] lab04
   - [ ] lab05
   - [ ] lab06
@@ -24,7 +24,7 @@ This is my solution about labs and projects in CS61C spring2022
   - [ ] lab09
   
 - project
-  - [ ] proj1
+  - [x] proj1
   - [ ] proj2
   
   - [ ] proj3
@@ -89,7 +89,24 @@ end time:*22.11.19*
   node_ptr = (node*)malloc(sizeof(node));
   ```
 
-  
+
+### lab03
+
+start time: *22.11.28*
+
+end time: *22.11.29*
+
+***p1: my solution maybe different with official requirement***
+
+***p2: I don't delete `YOUR CODE HERE` in this lab, but I surly finished***
+
+exercise 2
+
+- if your computer have small screen, you may need shrink your browser by `ctrl + middle mouse button`  to having good experience of debug
+
+exercise 5
+
+- if you using **recursion** in RISC-V(or other assembly language), **you need do lots of actions of restoring value in stack**
 
 ## projects
 
