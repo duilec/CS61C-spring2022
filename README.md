@@ -25,7 +25,7 @@ This is my solution about labs and projects in CS61C spring2022
   
 - project
   - [x] proj1
-  - [ ] proj2
+  - [x] proj2
   
   - [ ] proj3
   - [ ] proj4
@@ -96,9 +96,9 @@ start time: *22.11.28*
 
 end time: *22.11.29*
 
-***p1: my solution maybe different with official requirement***
+***ps1: my solution maybe different with official requirement***
 
-***p2: I don't delete `YOUR CODE HERE` in this lab, but I surly finished***
+***ps2: I don't delete `YOUR CODE HERE` in this lab, but I surly finished***
 
 exercise 2
 
@@ -111,6 +111,27 @@ exercise 5
 ## projects
 
 ### proj1
+
+start time: *22.11.20*
+
+end time:*22.11.23*
+
+use `fseek`，`ftell` and `rewind` to get length of string 
+
+  ```c
+  /* get the length of A string in A file */
+  
+  // seek position of ending(it is '\0'?) in f
+  fseek(f, 0, SEEK_END);
+  // get the current position(the ending of position) 
+  long f_len = ftell(f);
+  // rewind to the beginning of position in f
+  rewind(f);
+  ```
+
+Modify variable **by passing pointer**
+
+endless recursion will cause `segmentfault`
 
 Conditional Inclusion
 
@@ -170,3 +191,32 @@ Conditional Inclusion
   #endif 
   #include HDR
   ```
+
+### proj2
+
+start time: *22.11.29*
+
+end time:*22.12.07*
+
+total time: 11hour 50min
+
+not work time: *22.12.1, 22.12.3 - 22.12.06*
+
+`callee`&`caller`
+
+- `callee register` mean that callee don't use it, if calllee would use it, you must store it in stack, then restore from stack(i.e. callee save)
+- `caller register ` mean that caller don't use it, if caller would use it, you must store it in stack, then restore from stack(i.e caller save)
+- `ra` is `caller register ` BUT we should store it in callee because we may call other function which will modify `ra` 
+- any function can be caller, caller or callee and caller at same time
+
+`error_malloc` better than `error_code_26`
+
+- because you can know the reason of error
+
+Some functions NOT return value, BUT they change some value by pointer of passing
+
+- eg. `matmul`
+
+hint in `test_chain`
+
+- the width of input matrix may **NOT** equals `1`
