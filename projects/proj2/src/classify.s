@@ -1,0 +1,201 @@
+.globl classify
+
+.text
+# =====================================
+# COMMAND LINE ARGUMENTS
+# =====================================
+# Args:
+#   a0 (int)        argc
+#   a1 (char**)     argv
+#   a1[1] (char*)   pointer to the filepath string of m0
+#   a1[2] (char*)   pointer to the filepath string of m1
+#   a1[3] (char*)   pointer to the filepath string of input matrix
+#   a1[4] (char*)   pointer to the filepath string of output file
+#   a2 (int)        silent mode, if this is 1, you should not print
+#                   anything. Otherwise, you should print the
+#                   classification and a newline.
+# Returns:
+#   a0 (int)        Classification
+# Exceptions:
+#   - If there are an incorrect number of command line args,
+#     this function terminates the program with exit code 31
+#   - If malloc fails, this function terminates the program with exit code 26
+#
+# Usage:
+#   main.s <M0_PATH> <M1_PATH> <INPUT_PATH> <OUTPUT_PATH>
+classify:
+	# check number of arguments == 5
+	addi t0 x0 5
+	bne t0 a0 error_nums_args
+
+	# Prologue
+	addi sp sp -36
+	sw ra 0(sp)
+	sw s0 4(sp)
+	sw s1 8(sp)
+	sw s2 12(sp)
+	sw s3 16(sp)
+	sw s4 20(sp)
+	sw s5 24(sp)
+	sw s6 28(sp)
+	sw s7 32(sp)
+	
+	# store a0-a2 to s0-s2
+	add s0 x0 a0
+	add s1 x0 a1
+	add s2 x0 a2
+
+	# allocate space to store widths and heights for calling read_matrix
+	addi a0 x0 32
+	jal ra malloc
+	beq a0 x0 error_malloc
+	add s3 x0 a0	
+
+	# Read pretrained m0
+	lw a0 4(s1)
+	addi a1 s3 0 # height of m0
+	addi a2 s3 4 # width of m0
+	# call read_matrix(s4 == m0)
+	jal ra read_matrix
+	add s4 x0 a0
+
+	# Read pretrained m1
+	# allocate space to a1 and a2 for calling read_matrix
+	lw a0 8(s1)
+	addi a1 s3 8 # height of m1
+	addi a2 s3 12 # width of m1
+	# call read_matrix(s5 == m1)
+	jal ra read_matrix
+	add s5 x0 a0
+
+	# Read input matrix
+	# NOTE: the width of input may NOT equals 1
+	# allocate space to a1 and a2 for calling read_matrix
+	lw a0 12(s1)
+	addi a1 s3 16 # height of input
+	addi a2 s3 20 # width of input
+	# call read_matrix(s6 == input)
+	jal ra read_matrix
+	add s6 x0 a0
+
+	# Compute h = matmul(m0, input)
+	# NOTE: matmul NOT return pointer, the result store in a6 that you have allocated the memory
+	# allocate memory for result matrix
+	# height of result == height of m0, width of result == width of input 
+	lw t0 0(s3)
+	lw t1 20(s3) 
+	mul a0 t0 t1
+	# store height*width to s7 to use in relu
+	add s7 x0 a0
+	slli a0 a0 2
+	jal ra malloc
+	beq a0 x0 error_malloc
+	# store pointer to 24(s3) in order to use in free and in matmul
+	sw a0 24(s3)
+	# prepare calling matmul
+	add a6 x0 a0
+	add a0 x0 s4
+	lw a1 0(s3)
+	lw a2 4(s3)
+	add a3 x0 s6
+	lw a4 16(s3)
+	lw a5 20(s3)	
+	# call matmul
+	jal ra matmul
+	
+	# Compute h = relu(h)
+	# prepare calling relu
+	lw a0 24(s3)
+	add a1 x0 s7
+	jal ra relu
+
+	# Compute o = matmul(m1, h)
+	# allocate memory for result matrix
+	# height of result == height of m1, width of result == width of h == width of input
+	lw t0 8(s3)
+	lw t1 20(s3)
+	mul a0 t0 t1 
+	slli a0 a0 2
+	jal ra malloc
+	beq a0 x0 error_malloc
+	# store pointer to 28(s3) in order to free
+	sw a0 28(s3)
+	# prepare calling matmul
+	add a6 x0 a0
+	add a0 x0 s5
+	lw a1 8(s3)
+	lw a2 12(s3)
+	lw a3 24(s3)
+	lw a4 12(s3)
+	lw a5 20(s3)
+	# call matmul
+	jal ra matmul
+
+	# Write output matrix o
+	# prepare calling write_matrix
+	# height of result == height of m1, width of result == width of h == width of input
+	lw a0 16(s1)
+	lw a1 28(s3)
+	lw a2 8(s3)
+	lw a3 20(s3)
+	# call write_matrix	
+	jal ra write_matrix
+
+	# Compute and return argmax(o)
+	lw a0 28(s3)
+	lw t0 8(s3)
+	lw t1 20(s3)
+	mul a1 t0 t1 
+	jal ra argmax
+
+	# store result to s7
+	add s7 x0 a0
+
+	# If enabled, print argmax(o) and newline
+	beq s2 x0 print_classification 
+	jal x0 true_exit
+
+print_classification:
+	jal ra print_int
+	addi a0 x0 '\n'
+	jal ra print_char	
+	jal x0 true_exit	
+
+true_exit:	
+	# free all allocated memory
+	lw a0 24(s3)
+	jal ra free	
+	lw a0 28(s3)
+	jal ra free
+	add a0 x0 s3
+	jal ra free
+	add a0 x0 s4	
+	jal ra free
+	add a0 x0 s5
+	jal ra free
+	add a0 x0 s6	
+	jal ra free
+
+	# get the result
+	add a0 x0 s7
+
+	# Epilogue
+	lw ra 0(sp)
+	lw s0 4(sp)
+	lw s1 8(sp)
+	lw s2 12(sp)
+	lw s3 16(sp)
+	lw s4 20(sp)
+	lw s5 24(sp)
+	lw s6 28(sp)
+	lw s7 32(sp)
+	addi sp sp 36
+	ret
+
+error_malloc:
+	li a0 26
+	j exit
+
+error_nums_args:
+	li a0 31
+	j exit
