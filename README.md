@@ -116,7 +116,20 @@ end time: *22.12.14*
 
 `megalistmanips.s`
 
-- loading(lw) data from pointer/address NOT adding(add)
+- loading(`lw`) data from pointer/address NOT adding(`add`)
+
+- the address of `node` **NOT equals** the first pointer(`int *arr`) in `node`
+
+  - i.e. `rs1 ` not equals `0(rs1)` in assembly language
+
+  ```c
+  struct node {
+      int *arr;
+      int size;
+      struct node *next;
+  };
+  ```
+
 - if you using **recursion** in RISC-V(or other assembly language), **you need do lots of actions of storing/restoring value in stack**. i.e. **stack will increase when all functions calling one by one and stack will decrease when all functions returning one by one in recursion**
 
 ## projects
