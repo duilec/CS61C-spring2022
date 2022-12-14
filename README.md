@@ -16,7 +16,7 @@ This is my solution about labs and projects in CS61C spring2022
   - [x] lab01
   - [x] lab02
   - [x] lab03
-  - [ ] lab04
+  - [x] lab04
   - [ ] lab05
   - [ ] lab06
   - [ ] lab07
@@ -106,7 +106,18 @@ exercise 2
 
 exercise 5
 
-- if you using **recursion** in RISC-V(or other assembly language), **you need do lots of actions of restoring value in stack**
+- if you using **recursion** in RISC-V(or other assembly language), **you need do lots of actions of storing/restoring value in stack**. i.e. **stack will increase when all functions calling one by one and stack will decrease when all functions returning one by one in recursion**
+
+### lab04
+
+start time: *22.12.14*
+
+end time: *22.12.14*
+
+`megalistmanips.s`
+
+- loading(lw) data from pointer/address NOT adding(add)
+- if you using **recursion** in RISC-V(or other assembly language), **you need do lots of actions of storing/restoring value in stack**. i.e. **stack will increase when all functions calling one by one and stack will decrease when all functions returning one by one in recursion**
 
 ## projects
 
